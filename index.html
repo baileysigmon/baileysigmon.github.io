@@ -69,7 +69,8 @@
   .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
   .sparkle-cta-btn:hover { background:#b8235d; }
   .sparkle-overview-why { font-size:13px; color:#4b5563; line-height:1.6; margin-bottom:12px; }
-  .sparkle-cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
+  .sparkle-cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  @media(max-width:480px){ .sparkle-cat-grid { grid-template-columns:1fr; } }
   .sparkle-cat-card { background:var(--white); border:1px solid var(--sparkle-bd); border-radius:10px; padding:14px 16px; }
   .sparkle-cat-card-header { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
   .sparkle-cat-name { font-size:15px; font-weight:800; color:var(--black); line-height:1.25; flex:1; }
@@ -91,7 +92,7 @@
   .cat-filter-select.has-value { border-color:var(--blue); color:var(--blue); background-color:#eef2ff; }
 
   /* ── Feature List ── */
-  .feature-list { background:var(--white); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+  .feature-list { background:var(--white); border-radius:12px; border:1px solid var(--border); overflow:clip; }
 
   /* Desktop: 4-col grid */
   .f-col-header { display:grid; grid-template-columns:1fr 52px 52px 66px; background:var(--gray); padding:8px 16px; border-bottom:1px solid var(--border); }
@@ -103,13 +104,17 @@
   .f-row:hover { background:#fafbff; }
   .f-row.has-detail:hover { background:#f0f4ff; }
 
-  /* Mobile: stack into card layout */
+  /* Mobile: sticky header + two-line rows */
   @media(max-width:600px){
-    .f-col-header { display:none; }
-    .f-row { display:block; padding:12px 14px; }
-    .f-cell { display:inline-flex; align-items:center; gap:4px; margin-top:8px; margin-right:8px; }
-    .f-cell-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; }
-    .f-row-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .f-col-header { display:flex; align-items:center; position:sticky; top:0; z-index:10; }
+    .f-col-header span:first-child { flex:1; }
+    .f-col-header span:last-child { display:none; }
+    .f-col-header span.c { width:26px; text-align:center; }
+    .f-row { display:block; padding:10px 14px; }
+    .f-row-line1 { display:flex; align-items:flex-start; }
+    .f-row-line1 .f-name { flex:1; }
+    .f-checks-mobile { display:flex; align-items:center; gap:4px; flex-shrink:0; padding-top:2px; }
+    .f-row-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:6px; }
   }
 
   .f-name { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:13px; color:#374151; padding-right:6px; }
@@ -358,14 +363,13 @@ function buildFeatureList() {
     const arrow = hasDesc ? '<svg class="expand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' : '';
 
     if (isMobile) {
-      // Mobile card layout
+      // Mobile: line1 = name + checks (right-aligned), line2 = badge + links (left)
       rowsHtml += '<div id="row-'+rid+'" class="f-row'+(hasDesc?' has-detail':'')+'"'+(hasDesc?' onclick="toggleDetail('+rid+')"':'')+'>'+
-        '<div class="f-name">'+sparkleIco+'<span class="f-name-text">'+esc(feat.feature)+'</span>'+badge+arrow+'</div>'+
-        '<div class="f-row-actions">'+
-          '<span class="f-cell"><span class="f-cell-label">OPS&nbsp;</span>'+chk(feat.ops)+'</span>'+
-          '<span class="f-cell"><span class="f-cell-label">NPS&nbsp;</span>'+chk(feat.nps)+'</span>'+
-          playBtn+helpLink+
+        '<div class="f-row-line1">'+
+          '<div class="f-name">'+sparkleIco+'<span class="f-name-text">'+esc(feat.feature)+'</span>'+arrow+'</div>'+
+          '<div class="f-checks-mobile">'+chk(feat.ops)+chk(feat.nps)+'</div>'+
         '</div>'+
+        '<div class="f-row-meta">'+badge+helpLink+playBtn+'</div>'+
         '</div>';
     } else {
       // Desktop grid layout
@@ -379,7 +383,7 @@ function buildFeatureList() {
     if (hasDesc) rowsHtml += '<div id="detail-'+rid+'" class="f-detail"><div class="f-detail-inner"><div class="detail-desc">'+esc(feat.description)+'</div></div></div>';
   });
 
-  const header = isMobile ? '' : '<div class="f-col-header"><span>Feature</span><span class="c">OPS</span><span class="c">NPS</span><span class="c">Help</span></div>';
+  const header = '<div class="f-col-header"><span>Feature</span><span class="c">OPS</span><span class="c">NPS</span><span class="c">Help</span></div>';
   wrap.innerHTML = '<div class="feature-list">'+header+rowsHtml+'</div>';
 }
 
