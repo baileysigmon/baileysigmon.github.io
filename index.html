@@ -1,0 +1,389 @@
+<!DOCTYPE html><!-- v22-github -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product Features Dashboard</title>
+<style>
+  :root {
+    --blue:       #1915E8;
+    --sky:        #63c1f2;
+    --teal:       #52c8c7;
+    --white:      #ffffff;
+    --black:      #0D0D0D;
+    --gray:       #f4f5f9;
+    --muted:      #6b7280;
+    --border:     #e5e7eb;
+    --sparkle:    #d0296b;
+    --sparkle-bg: #ffe4ec;
+    --sparkle-bd: #fd8aa5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Proxima Nova', 'Montserrat', 'Inter', sans-serif;
+    background: #f8f9fc; color: var(--black);
+    min-height: 100vh; padding: 20px 12px 56px; overflow-x: hidden;
+  }
+
+  /* ── Loading / Error ── */
+  #loadingState { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:16px; }
+  .spinner { width:38px; height:38px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-text { font-size:15px; color:var(--muted); font-weight:600; }
+  #errorState { display:none; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:16px 18px; color:#991b1b; font-size:14px; margin-bottom:16px; }
+  #mainContent { display:none; }
+
+  /* ── Header ── */
+  .page-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+  .logo-box { width:40px; height:40px; background:var(--blue); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .logo-box svg { width:20px; height:20px; fill:white; }
+  .page-title { font-size:20px; font-weight:700; letter-spacing:-.3px; }
+  .page-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .refresh-btn { margin-left:auto; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:5px; transition:all .15s; flex-shrink:0; }
+  .refresh-btn:hover { border-color:var(--blue); color:var(--blue); }
+  .refresh-btn svg { width:13px; height:13px; }
+  .refresh-btn.spinning svg { animation:spin .7s linear infinite; }
+
+  /* ── Summary Cards ── */
+  .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  @media(max-width:480px){ .summary-grid { grid-template-columns:1fr; } }
+  .s-card { background:var(--white); border-radius:12px; padding:14px 16px; border:1px solid var(--border); position:relative; overflow:hidden; }
+  .s-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
+  .s-card.c-blue::before { background:var(--blue); }
+  .s-card.c-sky::before  { background:var(--sky); }
+  .s-card.c-teal::before { background:var(--teal); }
+  .s-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:3px; }
+  .s-value { font-size:26px; font-weight:700; line-height:1; margin-bottom:2px; }
+  .s-card.c-blue .s-value { color:var(--blue); }
+  .s-card.c-sky  .s-value { color:#2a9fd6; }
+  .s-card.c-teal .s-value { color:#2aada0; }
+  .s-sub { font-size:11px; color:var(--muted); }
+
+  /* ── Sparkle Overview ── */
+  #sparkleOverview { background:var(--sparkle-bg); border:1px solid var(--sparkle-bd); border-radius:16px; padding:18px 16px; margin-bottom:20px; position:relative; overflow:hidden; }
+  #sparkleOverview::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--sparkle),#fd8aa5,var(--sparkle)); border-radius:12px 12px 0 0; }
+  .sparkle-overview-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .sparkle-overview-title { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:var(--sparkle); }
+  .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
+  .sparkle-cta-btn:hover { background:#b8235d; }
+  .sparkle-overview-why { font-size:13px; color:#4b5563; line-height:1.6; margin-bottom:12px; }
+  .sparkle-cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
+  .sparkle-cat-card { background:var(--white); border:1px solid var(--sparkle-bd); border-radius:10px; padding:14px 16px; }
+  .sparkle-cat-card-header { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+  .sparkle-cat-name { font-size:15px; font-weight:800; color:var(--black); line-height:1.25; flex:1; }
+  .sparkle-cat-summary { font-size:13px; color:#4b5563; line-height:1.6; }
+
+  /* ── Controls ── */
+  .controls-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .tab-group { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+  .filter-label { font-size:12px; font-weight:600; color:var(--muted); }
+  .f-btn { padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:5px; }
+  .f-btn:hover { border-color:var(--blue); color:var(--blue); }
+  .f-btn.active { background:var(--blue); color:white; border-color:var(--blue); }
+  .f-btn.sparkle-tab { border-color:var(--sparkle-bd); color:var(--sparkle); }
+  .f-btn.sparkle-tab:hover { border-color:var(--sparkle); background:var(--sparkle-bg); }
+  .f-btn.sparkle-tab.active { background:var(--sparkle); border-color:var(--sparkle); color:white; }
+  .cat-filter-wrap { position:relative; }
+  .cat-filter-select { appearance:none; -webkit-appearance:none; padding:6px 24px 6px 10px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; transition:all .15s; font-family:inherit; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; }
+  .cat-filter-select:focus { outline:none; border-color:var(--blue); color:var(--blue); }
+  .cat-filter-select.has-value { border-color:var(--blue); color:var(--blue); background-color:#eef2ff; }
+
+  /* ── Feature List ── */
+  .feature-list { background:var(--white); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+
+  /* Desktop: 4-col grid */
+  .f-col-header { display:grid; grid-template-columns:1fr 52px 52px 66px; background:var(--gray); padding:8px 16px; border-bottom:1px solid var(--border); }
+  .f-col-header span { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+  .f-col-header span.c { text-align:center; }
+  .f-row { display:grid; grid-template-columns:1fr 52px 52px 66px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--border); transition:background .1s; position:relative; }
+  .f-row:last-of-type { border-bottom:none; }
+  .f-row.has-detail { cursor:pointer; }
+  .f-row:hover { background:#fafbff; }
+  .f-row.has-detail:hover { background:#f0f4ff; }
+
+  /* Mobile: stack into card layout */
+  @media(max-width:600px){
+    .f-col-header { display:none; }
+    .f-row { display:block; padding:12px 14px; }
+    .f-cell { display:inline-flex; align-items:center; gap:4px; margin-top:8px; margin-right:8px; }
+    .f-cell-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; }
+    .f-row-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  }
+
+  .f-name { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:13px; color:#374151; padding-right:6px; }
+  .f-name-text { font-weight:500; }
+  .cat-badge { font-size:10px; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid; flex-shrink:0; white-space:nowrap; }
+  .sparkle-icon { font-size:13px; flex-shrink:0; }
+
+  .play-btn { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:999px; background:var(--blue); color:white; border:none; cursor:pointer; flex-shrink:0; text-decoration:none; transition:background .15s; }
+  .play-btn:hover { background:#100fb5; }
+  .play-btn svg { width:8px; height:8px; margin-left:1px; }
+
+  .help-link { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:var(--blue); text-decoration:none; padding:3px 9px; background:#eef2ff; border-radius:999px; border:1px solid #c7d2fe; white-space:nowrap; flex-shrink:0; transition:background .15s; }
+  .help-link svg { display:inline; width:10px; height:10px; }
+  .help-link:hover { background:#e0e7ff; }
+
+  .expand-arrow { width:13px; height:13px; flex-shrink:0; color:#c7d2fe; transition:transform .2s, color .15s; margin-left:2px; }
+  .f-row.has-detail:hover .expand-arrow { color:var(--blue); }
+  .f-row.expanded .expand-arrow { transform:rotate(90deg); color:var(--blue); }
+
+  .f-cell-d { display:flex; align-items:center; justify-content:center; }
+  .chk-y { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:999px; background:#dcfce7; color:#16a34a; font-size:13px; }
+  .chk-n { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:999px; background:#f3f4f6; color:#d1d5db; font-size:15px; line-height:1; }
+
+  .f-detail { overflow:hidden; max-height:0; transition:max-height .25s ease; background:#fafbff; border-bottom:1px solid var(--border); }
+  .f-detail.open { max-height:400px; }
+  .f-detail-inner { padding:10px 12px 12px; }
+  .detail-desc { font-size:13px; color:#374151; line-height:1.65; }
+  .empty-state { padding:40px 20px; text-align:center; font-size:14px; color:var(--muted); }
+  .footer { font-size:11px; color:var(--muted); margin-top:14px; text-align:right; }
+</style>
+</head>
+<body>
+
+<div id="loadingState">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading features…</div>
+</div>
+<div id="errorState"></div>
+<div id="mainContent">
+
+  <div class="page-header">
+    <div class="logo-box">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+    </div>
+    <div>
+      <div class="page-title">Product Features</div>
+      <div class="page-sub">OPS &amp; NPS availability by category</div>
+    </div>
+    <button class="refresh-btn" id="refreshBtn" onclick="init()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div id="sparkleOverview">
+    <div class="sparkle-overview-header">
+      <div class="sparkle-overview-title">✨ Why Move to NPS?</div>
+      <button class="sparkle-cta-btn" onclick="switchToSparkle()">✨ View All Sparkle Features</button>
+    </div>
+    <div class="sparkle-overview-why" id="sparkleWhy"></div>
+    <div class="sparkle-cat-grid" id="sparkleCatGrid"></div>
+  </div>
+
+  <div class="controls-row">
+    <span class="filter-label">View:</span>
+    <div class="tab-group">
+      <button class="f-btn active"      id="tab-all"     onclick="setFilter('all',this)">All</button>
+      <button class="f-btn"             id="tab-nps"     onclick="setFilter('nps',this)">NPS Only</button>
+      <button class="f-btn"             id="tab-both"    onclick="setFilter('both',this)">Both</button>
+      <button class="f-btn"             id="tab-shopify" onclick="setFilter('shopify',this)">Shopify</button>
+      <button class="f-btn sparkle-tab" id="tab-sparkle" onclick="setFilter('sparkle',this)">✨ Sparkle</button>
+    </div>
+    <span class="filter-label">Category:</span>
+    <div class="cat-filter-wrap">
+      <select class="cat-filter-select" id="catFilter" onchange="onCatFilter()">
+        <option value="">All Categories</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="featureListWrap"></div>
+  <div class="footer" id="footer"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// CONFIGURATION — paste your Apps Script URL here
+// ─────────────────────────────────────────────
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySL-8JOb6QIIsYy_85i6g-3uZ4hdn_O0udxxT9J1L-tPJ1bYzop9FVr_YpkJu5gM-R/exec';
+// ─────────────────────────────────────────────
+
+let DATA = [], currentFilter = 'all', currentCat = '', rowIdCtr = 0;
+const PALETTE = ['#1915E8','#2aada0','#d0296b','#c9a800','#2a9fd6','#52c8c7','#6366f1','#f97316','#8b5cf6','#06b6d4','#22c55e','#ec4899','#a855f7','#e11d48','#0891b2','#7c3aed','#15803d','#b45309','#0369a1','#9f1239'];
+const catColors = {};
+
+function init() {
+  const btn = document.getElementById('refreshBtn');
+  if (btn) btn.classList.add('spinning');
+  document.getElementById('errorState').style.display = 'none';
+
+  fetch(APPS_SCRIPT_URL)
+    .then(r => r.json())
+    .then(rows => {
+      DATA = rows;
+      [...new Set(DATA.map(d => d.category))].sort().forEach((c, i) => {
+        if (!catColors[c]) catColors[c] = PALETTE[i % PALETTE.length];
+      });
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('mainContent').style.display  = 'block';
+      if (btn) btn.classList.remove('spinning');
+      buildSummary();
+      buildCatFilter();
+      buildSparkleOverview();
+      document.getElementById('sparkleOverview').style.display = 'block';
+      buildFeatureList();
+      const now = new Date();
+      document.getElementById('footer').textContent = 'Last synced: ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
+    })
+    .catch(err => {
+      document.getElementById('loadingState').style.display = 'none';
+      const el = document.getElementById('errorState');
+      el.style.display = 'block';
+      el.innerHTML = '<strong>Could not load sheet data.</strong><br><small>' + (err.message || err) + '</small>';
+      if (btn) btn.classList.remove('spinning');
+    });
+}
+
+function buildSummary() {
+  const total = DATA.length, both = DATA.filter(f => f.ops && f.nps).length, npsOnly = DATA.filter(f => f.nps && !f.ops).length;
+  const cats = [...new Set(DATA.map(f => f.category))].length;
+  document.getElementById('summaryGrid').innerHTML = [
+    {label:'Total Features', value:total, sub:'across '+cats+' categories', cls:'c-blue'},
+    {label:'OPS + NPS',      value:both,  sub:'available on both platforms', cls:'c-sky'},
+    {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform', cls:'c-teal'},
+  ].map(c => '<div class="s-card '+c.cls+'"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
+}
+
+function buildCatFilter() {
+  const sel = document.getElementById('catFilter');
+  const cats = [...new Set(DATA.map(d => d.category))].sort();
+  sel.innerHTML = '<option value="">All Categories</option>' + cats.map(c => '<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');
+}
+
+function onCatFilter() {
+  currentCat = document.getElementById('catFilter').value;
+  document.getElementById('catFilter').classList.toggle('has-value', currentCat !== '');
+  buildFeatureList();
+}
+
+function buildSparkleOverview() {
+  const sf = DATA.filter(f => f.sparkle);
+  document.getElementById('sparkleWhy').textContent = 'NPS unlocks powerful features designed to help your shop grow and operate more efficiently. From advanced scheduling and Shopify integrations to AI-powered tools and deeper inventory controls, these capabilities give your team more flexibility, save time, and create a better experience for your customers.';
+  const grouped = {};
+  sf.forEach(f => { if (!grouped[f.category]) grouped[f.category] = []; grouped[f.category].push(f); });
+  const sorted = Object.keys(grouped).sort((a, b) => grouped[b].length - grouped[a].length);
+  const grid = document.getElementById('sparkleCatGrid');
+  if (!sorted.length) { grid.innerHTML = '<div style="font-size:13px;color:var(--muted);">No sparkle features found.</div>'; return; }
+  grid.innerHTML = sorted.map(cat => {
+    const info = getCatInfo(cat, grouped[cat]);
+    return '<div class="sparkle-cat-card"><div class="sparkle-cat-card-header"><span class="sparkle-cat-name">'+esc(info.title)+'</span><span>✨</span></div><div class="sparkle-cat-summary">'+esc(info.summary)+'</div></div>';
+  }).join('');
+}
+
+function getFiltered() {
+  let r = DATA.slice();
+  if (currentFilter === 'nps')     r = r.filter(f => f.nps && !f.ops);
+  else if (currentFilter === 'both')    r = r.filter(f => f.ops && f.nps);
+  else if (currentFilter === 'shopify') r = r.filter(f => f.shopify);
+  else if (currentFilter === 'sparkle') r = r.filter(f => f.sparkle);
+  if (currentCat) r = r.filter(f => f.category === currentCat);
+  return r;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('sparkleOverview').style.display = (f === 'all') ? 'block' : 'none';
+  buildFeatureList();
+}
+
+function switchToSparkle() {
+  currentFilter = 'sparkle';
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-sparkle').classList.add('active');
+  document.getElementById('sparkleOverview').style.display = 'none';
+  buildFeatureList();
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function chk(val) { return val ? '<span class="chk-y">&#10003;</span>' : '<span class="chk-n">&ndash;</span>'; }
+
+function toggleDetail(rowId) {
+  const row = document.getElementById('row-'+rowId), detail = document.getElementById('detail-'+rowId);
+  if (!row || !detail) return;
+  const isOpen = detail.classList.contains('open');
+  if (isOpen) { detail.style.maxHeight = detail.scrollHeight+'px'; requestAnimationFrame(() => { detail.style.maxHeight = '0'; }); }
+  else { detail.style.maxHeight = detail.scrollHeight+'px'; detail.addEventListener('transitionend', function onEnd(){ detail.style.maxHeight = 'none'; detail.removeEventListener('transitionend', onEnd); }); }
+  detail.classList.toggle('open', !isOpen);
+  row.classList.toggle('expanded', !isOpen);
+}
+
+const CAT_INFO = {
+  'Schedule':           {title:'Set It & Forget It',       summary:'Schedule price changes, product badges, and flash sales in advance — so your shop keeps working even when you\'re not.'},
+  'Product Editor':     {title:'AI-Powered Listings',      summary:'AI-assisted creation, richer descriptions, HTML formatting on mobile, and smarter controls that cut manual work and keep your catalog polished.'},
+  'Filters':            {title:'Find Anything Fast',       summary:'Advanced AND/OR logic, tag-based filters, dropship filters, and more — slice your catalog any way you need.'},
+  'Main Product Table': {title:'Your Catalog, Your Way',   summary:'Reorder columns, filter smarter, and get accurate stock counts — a cleaner, more actionable view of your inventory at a glance.'},
+  'Inventory':          {title:'Always Know Your Stock',   summary:'Better organization, sticky headers for easier navigation, and timestamp visibility so you always know when counts were last updated.'},
+  'Delete':             {title:'Clean Up with Confidence', summary:'Manage deleted items in a dedicated tab and clean up dropship products — without losing visibility into what\'s gone.'},
+  'Media':              {title:'Images Per Variant',       summary:'Add images per variant so customers see exactly what they\'re buying — and those images carry through to order history and packing slips.'},
+  'Shopify':            {title:'Hands-Free Shopify Sync',  summary:'Keep Shopify in sync automatically — from final sale tags to auto-removal — so you spend less time on manual updates.'},
+  'Templates':          {title:'More Ways to Sell',        summary:'Mystery products and gift cards alongside standard templates — more flexibility for creative promotions and customer experiences.'},
+  'Collections':        {title:'Pin What Matters',         summary:'Pin products to feature the right items in the right place — driving attention to what\'s new, on sale, or most important.'},
+  'Mobile':             {title:'Manage on the Go',         summary:'Bulk update variants right from your mobile device — no more waiting until you\'re back at a desktop to make changes.'},
+  'Waitlist':           {title:'Fine-Tune Waitlists',      summary:'Per-product control over waitlist variant limits — fine-tune how you capture interest for high-demand items.'},
+  'Product Selections': {title:'Scan & Go',                summary:'Scan products into selections with fewer errors and less manual entry — speeding up how you curate what customers see.'},
+  'Import/Export':      {title:'Bulk Import & Export',     summary:'Keep your catalog in sync with external tools — bulk updates and migrations made straightforward.'},
+};
+
+function getCatInfo(cat, features) {
+  if (CAT_INFO[cat]) return CAT_INFO[cat];
+  const n = features.length;
+  return {title: cat, summary: 'NPS unlocks '+n+' '+cat.toLowerCase()+' feature'+(n===1?'':'s')+' that give your shop more flexibility, smarter controls, and a better experience.'};
+}
+
+function buildFeatureList() {
+  rowIdCtr = 0;
+  const visible = getFiltered(), wrap = document.getElementById('featureListWrap');
+  if (!visible.length) { wrap.innerHTML = '<div class="feature-list"><div class="empty-state">No features match the current filters.</div></div>'; return; }
+  visible.sort((a, b) => { if (a.sparkle && !b.sparkle) return -1; if (!a.sparkle && b.sparkle) return 1; return a.feature.localeCompare(b.feature); });
+
+  const isMobile = window.innerWidth <= 600;
+  let rowsHtml = '';
+
+  visible.forEach(feat => {
+    const rid = rowIdCtr++, hasDesc = !!feat.description, color = catColors[feat.category] || '#1915E8';
+    const badge = '<span class="cat-badge" style="color:'+color+';border-color:'+color+'20;background:'+color+'10;">'+esc(feat.category)+'</span>';
+    const sparkleIco = feat.sparkle ? '<span class="sparkle-icon">✨</span>' : '';
+    const playBtn = feat.videoUrl ? '<a href="'+esc(feat.videoUrl)+'" target="_blank" rel="noopener" class="play-btn" title="Watch video" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></a>' : '';
+    const helpLink = feat.helpUrl ? '<a href="'+esc(feat.helpUrl)+'" target="_blank" rel="noopener" class="help-link" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Help</a>' : '';
+    const arrow = hasDesc ? '<svg class="expand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>' : '';
+
+    if (isMobile) {
+      // Mobile card layout
+      rowsHtml += '<div id="row-'+rid+'" class="f-row'+(hasDesc?' has-detail':'')+'"'+(hasDesc?' onclick="toggleDetail('+rid+')"':'')+'>'+
+        '<div class="f-name">'+sparkleIco+'<span class="f-name-text">'+esc(feat.feature)+'</span>'+badge+arrow+'</div>'+
+        '<div class="f-row-actions">'+
+          '<span class="f-cell"><span class="f-cell-label">OPS&nbsp;</span>'+chk(feat.ops)+'</span>'+
+          '<span class="f-cell"><span class="f-cell-label">NPS&nbsp;</span>'+chk(feat.nps)+'</span>'+
+          playBtn+helpLink+
+        '</div>'+
+        '</div>';
+    } else {
+      // Desktop grid layout
+      rowsHtml += '<div id="row-'+rid+'" class="f-row'+(hasDesc?' has-detail':'')+'"'+(hasDesc?' onclick="toggleDetail('+rid+')"':'')+'>'+
+        '<div class="f-name">'+sparkleIco+'<span class="f-name-text">'+esc(feat.feature)+'</span>'+badge+playBtn+arrow+'</div>'+
+        '<div class="f-cell-d">'+chk(feat.ops)+'</div>'+
+        '<div class="f-cell-d">'+chk(feat.nps)+'</div>'+
+        '<div class="f-cell-d">'+helpLink+'</div>'+
+        '</div>';
+    }
+    if (hasDesc) rowsHtml += '<div id="detail-'+rid+'" class="f-detail"><div class="f-detail-inner"><div class="detail-desc">'+esc(feat.description)+'</div></div></div>';
+  });
+
+  const header = isMobile ? '' : '<div class="f-col-header"><span>Feature</span><span class="c">OPS</span><span class="c">NPS</span><span class="c">Help</span></div>';
+  wrap.innerHTML = '<div class="feature-list">'+header+rowsHtml+'</div>';
+}
+
+init();
+</script>
+</body>
+</html>
