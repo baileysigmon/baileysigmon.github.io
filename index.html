@@ -36,19 +36,20 @@
   #mainContent { display:none; }
 
   /* ── Header ── */
-  .page-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
-  .logo-box { width:40px; height:40px; background:var(--blue); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .logo-box svg { width:20px; height:20px; fill:white; }
+  .page-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+  .logo-box { width:40px; height:40px; background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; padding:5px; box-sizing:border-box; }
+  .logo-box svg { width:100%; height:100%; }
+  .page-header-text { flex:1; min-width:0; }
   .page-title { font-size:20px; font-weight:700; letter-spacing:-.3px; }
   .page-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-  .refresh-btn { margin-left:auto; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; display:flex; align-items:center; gap:5px; transition:all .15s; flex-shrink:0; }
+  .refresh-btn { width:34px; height:34px; border-radius:50%; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0; padding:0; }
   .refresh-btn:hover { border-color:var(--blue); color:var(--blue); }
-  .refresh-btn svg { width:13px; height:13px; }
+  .refresh-btn svg { width:16px; height:16px; }
   .refresh-btn.spinning svg { animation:spin .7s linear infinite; }
 
   /* ── Summary Cards ── */
   .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
-  @media(max-width:480px){ .summary-grid { grid-template-columns:1fr; } }
+  @media(max-width:480px){ .summary-grid { grid-template-columns:repeat(3,1fr); } }
   .s-card { background:var(--white); border-radius:12px; padding:14px 16px; border:1px solid var(--border); position:relative; overflow:hidden; }
   .s-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
   .s-card.c-blue::before { background:var(--blue); }
@@ -64,8 +65,14 @@
   /* ── Sparkle Overview ── */
   #sparkleOverview { background:var(--sparkle-bg); border:1px solid var(--sparkle-bd); border-radius:16px; padding:18px 16px; margin-bottom:20px; position:relative; overflow:hidden; }
   #sparkleOverview::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--sparkle),#fd8aa5,var(--sparkle)); border-radius:12px 12px 0 0; }
-  .sparkle-overview-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .sparkle-overview-header { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .sparkle-overview-header-left { display:flex; align-items:center; gap:8px; }
   .sparkle-overview-title { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:var(--sparkle); }
+  .sparkle-toggle-btn { background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center; color:var(--sparkle); transition:transform .2s; }
+  .sparkle-toggle-btn svg { width:18px; height:18px; }
+  .sparkle-toggle-btn.collapsed { transform:rotate(-90deg); }
+  .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease; max-height:2000px; opacity:1; margin-top:8px; }
+  .sparkle-overview-body.collapsed { max-height:0; opacity:0; margin-top:0; }
   .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
   .sparkle-cta-btn:hover { background:#b8235d; }
   .sparkle-overview-why { font-size:13px; color:#4b5563; line-height:1.6; margin-bottom:12px; }
@@ -157,18 +164,17 @@
 
   <div class="page-header">
     <div class="logo-box">
-      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 860.88 684.75" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="cs-clip"><path d="M0 0L860.664 0L860.664 683.75L0 683.75Z" clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#cs-clip)"><path fill="#1915e8" d="M576.434-0.324L284.5-0.324C154.699-0.285 41.449 87.695 9.301 213.441-29.559 365.453 62.18 520.211 214.211 559.07L214.211 657.809C214.199 658.145 214.199 658.48 214.211 658.82 215.688 673.234 227.848 684.191 242.352 684.176 246.16 684.176 249.914 683.391 253.406 681.898 253.742 681.75 254.059 681.582 254.383 681.375L442.977 567.848 576.441 567.848C733.332 567.832 860.484 440.668 860.508 283.781 860.5 126.891 733.316-0.301 576.434-0.324ZM263.121 343.918C277.02 358.332 294.668 365.758 316.055 365.758 343.914 365.758 371.32 349.93 383.859 326.273L433.105 355.039C411.316 395.492 366.715 421.48 315.148 421.48 276.109 421.48 244.051 408.941 218.98 384.316 194.355 359.695 181.816 328.145 181.816 289.566 181.816 250.988 194.355 219.438 219.438 194.816 244.516 170.191 277.023 157.652 317.027 157.652 368.547 157.652 413.594 182.734 434.078 226.875L384.824 253.313C369.961 228.688 345.789 213.367 317.93 213.367 296.086 213.367 277.984 220.805 263.57 235.211 249.156 249.625 242.18 267.719 242.18 289.566 242.18 311.418 249.156 329.512 263.113 343.926ZM652.117 399.633C634.016 415.004 610.301 422.441 581.023 422.441 540.172 422.441 503.008 405.246 479.293 372.227L513.676 335.066C530.41 357.363 556.848 370.863 581.48 370.863 603.32 370.863 618.641 359.23 618.641 344.367 618.641 334.609 612.172 326.266 599.633 320.195 595.438 317.871 585.219 313.727 568.938 307.652 553.168 301.641 542.504 296.988 536.879 294.207 508.57 280.25 494.613 258.918 494.613 230.09 494.613 208.246 503.008 190.145 519.691 176.188 536.43 162.293 558.73 155.309 586.133 155.309 621.941 155.309 650.699 167.848 672.551 192.469L640.949 230.996C624.719 213.801 605.66 205.008 584.266 205.008 565.258 205.008 553.625 215.219 553.625 228.664 553.625 239.84 561.063 248.184 575.469 253.289 611.723 267.703 632.148 276.098 636.348 278.367 664.656 293.742 679.07 315.082 679.07 342.484 679.07 365.293 670.219 384.305 652.117 399.625Z" fill-rule="nonzero"/></g></svg>
     </div>
-    <div>
-      <div class="page-title">Product Features</div>
-      <div class="page-sub">OPS &amp; NPS availability by category</div>
+    <div class="page-header-text">
+      <div class="page-title">Product Screen Comparison</div>
+      <div class="page-sub">Classic Product Screen vs New Product Screen</div>
     </div>
-    <button class="refresh-btn" id="refreshBtn" onclick="init()">
+    <button class="refresh-btn" id="refreshBtn" onclick="init()" aria-label="Refresh">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
       </svg>
-      Refresh
     </button>
   </div>
 
@@ -176,11 +182,18 @@
 
   <div id="sparkleOverview">
     <div class="sparkle-overview-header">
-      <div class="sparkle-overview-title">✨ Why Move to NPS?</div>
+      <div class="sparkle-overview-header-left">
+        <div class="sparkle-overview-title">✨ Why Move to NPS?</div>
+        <button class="sparkle-toggle-btn" id="sparkleToggleBtn" onclick="toggleSparkleOverview()" aria-label="Toggle section">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
       <button class="sparkle-cta-btn" onclick="switchToSparkle()">✨ View All Sparkle Features</button>
     </div>
-    <div class="sparkle-overview-why" id="sparkleWhy"></div>
-    <div class="sparkle-cat-grid" id="sparkleCatGrid"></div>
+    <div class="sparkle-overview-body" id="sparkleOverviewBody">
+      <div class="sparkle-overview-why" id="sparkleWhy"></div>
+      <div class="sparkle-cat-grid" id="sparkleCatGrid"></div>
+    </div>
   </div>
 
   <div class="controls-row">
@@ -233,7 +246,6 @@ function init() {
       buildSummary();
       buildCatFilter();
       buildSparkleOverview();
-      document.getElementById('sparkleOverview').style.display = 'block';
       buildFeatureList();
       const now = new Date();
       document.getElementById('footer').textContent = 'Last synced: ' + now.toLocaleTimeString() + ' on ' + now.toLocaleDateString();
@@ -252,7 +264,7 @@ function buildSummary() {
   const cats = [...new Set(DATA.map(f => f.category))].length;
   document.getElementById('summaryGrid').innerHTML = [
     {label:'Total Features', value:total, sub:'across '+cats+' categories', cls:'c-blue'},
-    {label:'OPS + NPS',      value:both,  sub:'available on both platforms', cls:'c-sky'},
+    {label:'Classic + NPS',  value:both,  sub:'available on both platforms', cls:'c-sky'},
     {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform', cls:'c-teal'},
   ].map(c => '<div class="s-card '+c.cls+'"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
 }
@@ -297,7 +309,6 @@ function setFilter(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  document.getElementById('sparkleOverview').style.display = (f === 'all') ? 'block' : 'none';
   buildFeatureList();
 }
 
@@ -305,8 +316,14 @@ function switchToSparkle() {
   currentFilter = 'sparkle';
   document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-sparkle').classList.add('active');
-  document.getElementById('sparkleOverview').style.display = 'none';
   buildFeatureList();
+}
+
+function toggleSparkleOverview() {
+  const body = document.getElementById('sparkleOverviewBody');
+  const btn  = document.getElementById('sparkleToggleBtn');
+  const collapsed = body.classList.toggle('collapsed');
+  btn.classList.toggle('collapsed', collapsed);
 }
 
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -383,7 +400,7 @@ function buildFeatureList() {
     if (hasDesc) rowsHtml += '<div id="detail-'+rid+'" class="f-detail"><div class="f-detail-inner"><div class="detail-desc">'+esc(feat.description)+'</div></div></div>';
   });
 
-  const header = '<div class="f-col-header"><span>Feature</span><span class="c">OPS</span><span class="c">NPS</span><span class="c">Help</span></div>';
+  const header = '<div class="f-col-header"><span>Feature</span><span class="c">Classic</span><span class="c">NPS</span><span class="c">Help</span></div>';
   wrap.innerHTML = '<div class="feature-list">'+header+rowsHtml+'</div>';
 }
 
