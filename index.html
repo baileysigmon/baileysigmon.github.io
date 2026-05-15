@@ -261,8 +261,8 @@ function buildSummary() {
   const cats = [...new Set(DATA.map(f => f.category))].length;
   document.getElementById('summaryGrid').innerHTML = [
     {label:'Total Features', value:total,   sub:'across '+cats+' categories',  cls:'c-blue', filter:'all'},
-    {label:'Classic + NPS',  value:both,    sub:'available on both platforms', cls:'c-sky',  filter:'both'},
     {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform',   cls:'c-teal', filter:'nps'},
+    {label:'Classic + NPS',  value:both,    sub:'available on both platforms', cls:'c-sky',  filter:'both'},
   ].map(c => '<div class="s-card '+c.cls+'" onclick="setFilter(\''+c.filter+'\',document.getElementById(\'tab-'+c.filter+'\'))"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
 }
 
