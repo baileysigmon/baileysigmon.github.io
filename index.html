@@ -62,6 +62,20 @@
   .s-card.c-sky  .s-value { color:#2a9fd6; }
   .s-card.c-teal .s-value { color:#2aada0; }
   .s-sub { font-size:11px; color:var(--muted); }
+  .s-tap-hint { font-size:10px; color:var(--muted); margin-top:6px; opacity:.7; }
+  @media(min-width:601px){ .s-tap-hint { display:none; } }
+
+  /* ── Browse section header ── */
+  .section-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .section-header-title { font-size:13px; font-weight:700; color:var(--black); letter-spacing:-.1px; }
+  .section-header-line { flex:1; height:1px; background:var(--border); }
+
+  /* ── Active filter sticky badge ── */
+  .active-filter-bar { display:none; }
+  @media(max-width:600px){
+    .active-filter-bar { display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--gray); border-bottom:1px solid var(--border); font-size:11px; color:var(--muted); font-weight:600; position:sticky; top:36px; z-index:9; }
+    .active-filter-pill { background:var(--blue); color:white; border-radius:999px; padding:2px 8px; font-size:11px; font-weight:700; }
+  }
 
   /* ── Sparkle Overview ── */
   #sparkleOverview { background:var(--sparkle-bg); border:1px solid var(--sparkle-bd); border-radius:16px; padding:18px 16px; margin-bottom:20px; position:relative; overflow:hidden; }
@@ -193,8 +207,14 @@
     </div>
   </div>
 
+  <div class="section-header">
+    <div class="section-header-line"></div>
+    <div class="section-header-title">Browse Features</div>
+    <div class="section-header-line"></div>
+  </div>
+
   <div class="controls-row">
-    <span class="filter-label">View:</span>
+    <span class="filter-label">Filter by availability:</span>
     <div class="tab-group">
       <button class="f-btn active"      id="tab-all"     onclick="setFilter('all',this)">All</button>
       <button class="f-btn"             id="tab-nps"     onclick="setFilter('nps',this)">NPS Only</button>
@@ -209,6 +229,7 @@
     </div>
   </div>
 
+  <div id="activeFilterBar" class="active-filter-bar">Showing: <span class="active-filter-pill" id="activeFilterPill">All</span></div>
   <div id="featureListWrap"></div>
   <div class="footer" id="footer"></div>
 </div>
@@ -262,7 +283,7 @@ function buildSummary() {
     {label:'Total Features', value:total,   sub:'across '+cats+' categories',  cls:'c-blue', filter:'all'},
     {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform',   cls:'c-teal', filter:'nps'},
     {label:'Classic + NPS',  value:both,    sub:'available on both platforms', cls:'c-sky',  filter:'both'},
-  ].map(c => '<div class="s-card '+c.cls+'" onclick="setFilter(\''+c.filter+'\',document.getElementById(\'tab-'+c.filter+'\'))"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
+  ].map(c => '<div class="s-card '+c.cls+'" onclick="setFilter(\''+c.filter+'\',document.getElementById(\'tab-'+c.filter+'\'))"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div><div class="s-tap-hint">Tap to filter ↓</div></div>').join('');
 }
 
 function buildCatFilter() {
@@ -310,10 +331,14 @@ function getFiltered() {
   return r;
 }
 
+const FILTER_LABELS = { all:'All Features', nps:'NPS Only', both:'Classic + NPS', shopify:'Shopify', sparkle:'✨ Sparkle' };
+
 function setFilter(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  const pill = document.getElementById('activeFilterPill');
+  if (pill) pill.textContent = FILTER_LABELS[f] || f;
   buildFeatureList();
 }
 
