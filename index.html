@@ -91,9 +91,6 @@
   .f-btn { padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:5px; }
   .f-btn:hover { border-color:var(--blue); color:var(--blue); }
   .f-btn.active { background:var(--blue); color:white; border-color:var(--blue); }
-  .f-btn.sparkle-tab { border-color:var(--sparkle-bd); color:var(--sparkle); }
-  .f-btn.sparkle-tab:hover { border-color:var(--sparkle); background:var(--sparkle-bg); }
-  .f-btn.sparkle-tab.active { background:var(--sparkle); border-color:var(--sparkle); color:white; }
   .cat-filter-wrap { position:relative; }
   .cat-filter-select { appearance:none; -webkit-appearance:none; padding:6px 24px 6px 10px; border-radius:999px; font-size:12px; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--muted); cursor:pointer; transition:all .15s; font-family:inherit; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; }
   .cat-filter-select:focus { outline:none; border-color:var(--blue); color:var(--blue); }
@@ -204,7 +201,6 @@
       <button class="f-btn"             id="tab-nps"     onclick="setFilter('nps',this)">NPS Only</button>
       <button class="f-btn"             id="tab-both"    onclick="setFilter('both',this)">Both</button>
       <button class="f-btn"             id="tab-shopify" onclick="setFilter('shopify',this)">Shopify</button>
-      <button class="f-btn sparkle-tab" id="tab-sparkle" onclick="setFilter('sparkle',this)">✨ Sparkle</button>
     </div>
     <span class="filter-label">Category:</span>
     <div class="cat-filter-wrap">
@@ -314,10 +310,7 @@ function setFilter(f, btn) {
 }
 
 function switchToSparkle() {
-  currentFilter = 'sparkle';
-  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-sparkle').classList.add('active');
-  buildFeatureList();
+  setFilter('sparkle', null);
 }
 
 function toggleSparkleOverview() {
