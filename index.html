@@ -290,7 +290,14 @@ function buildSparkleOverview() {
     return '<div class="sparkle-cat-card"><div class="sparkle-cat-card-header"><span class="sparkle-cat-name">'+esc(info.title)+'</span><span>✨</span></div><div class="sparkle-cat-summary">'+esc(info.summary)+'</div></div>';
   }).join('');
   const body = document.getElementById('sparkleOverviewBody');
-  body.style.maxHeight = body.scrollHeight + 'px';
+  const btn  = document.getElementById('sparkleToggleBtn');
+  if (window.innerWidth <= 600) {
+    body.style.maxHeight = '0';
+    body.style.opacity   = '0';
+    btn.classList.add('collapsed');
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
 }
 
 function getFiltered() {
