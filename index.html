@@ -50,7 +50,8 @@
   /* ── Summary Cards ── */
   .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
   @media(max-width:480px){ .summary-grid { grid-template-columns:repeat(3,1fr); } }
-  .s-card { background:var(--white); border-radius:12px; padding:14px 16px; border:1px solid var(--border); position:relative; overflow:hidden; }
+  .s-card { background:var(--white); border-radius:12px; padding:14px 16px; border:1px solid var(--border); position:relative; overflow:hidden; cursor:pointer; transition:box-shadow .15s, transform .15s; }
+  .s-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.08); transform:translateY(-1px); }
   .s-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
   .s-card.c-blue::before { background:var(--blue); }
   .s-card.c-sky::before  { background:var(--sky); }
@@ -263,10 +264,10 @@ function buildSummary() {
   const total = DATA.length, both = DATA.filter(f => f.ops && f.nps).length, npsOnly = DATA.filter(f => f.nps && !f.ops).length;
   const cats = [...new Set(DATA.map(f => f.category))].length;
   document.getElementById('summaryGrid').innerHTML = [
-    {label:'Total Features', value:total, sub:'across '+cats+' categories', cls:'c-blue'},
-    {label:'Classic + NPS',  value:both,  sub:'available on both platforms', cls:'c-sky'},
-    {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform', cls:'c-teal'},
-  ].map(c => '<div class="s-card '+c.cls+'"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
+    {label:'Total Features', value:total,   sub:'across '+cats+' categories',  cls:'c-blue', filter:'all'},
+    {label:'Classic + NPS',  value:both,    sub:'available on both platforms', cls:'c-sky',  filter:'both'},
+    {label:'NPS Only',       value:npsOnly, sub:'exclusive to NPS platform',   cls:'c-teal', filter:'nps'},
+  ].map(c => '<div class="s-card '+c.cls+'" onclick="setFilter(\''+c.filter+'\',document.getElementById(\'tab-'+c.filter+'\'))"><div class="s-label">'+c.label+'</div><div class="s-value">'+c.value+'</div><div class="s-sub">'+c.sub+'</div></div>').join('');
 }
 
 function buildCatFilter() {
