@@ -72,8 +72,7 @@
   .sparkle-toggle-btn { background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center; color:var(--sparkle); transition:transform .2s; }
   .sparkle-toggle-btn svg { width:18px; height:18px; }
   .sparkle-toggle-btn.collapsed { transform:rotate(-90deg); }
-  .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease; max-height:2000px; opacity:1; margin-top:8px; }
-  .sparkle-overview-body.collapsed { max-height:0; opacity:0; margin-top:0; }
+  .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease, margin-top .3s ease; opacity:1; margin-top:8px; }
   .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
   .sparkle-cta-btn:hover { background:#b8235d; }
   .sparkle-overview-why { font-size:13px; color:#4b5563; line-height:1.6; margin-bottom:12px; }
@@ -290,6 +289,8 @@ function buildSparkleOverview() {
     const info = getCatInfo(cat, grouped[cat]);
     return '<div class="sparkle-cat-card"><div class="sparkle-cat-card-header"><span class="sparkle-cat-name">'+esc(info.title)+'</span><span>✨</span></div><div class="sparkle-cat-summary">'+esc(info.summary)+'</div></div>';
   }).join('');
+  const body = document.getElementById('sparkleOverviewBody');
+  body.style.maxHeight = body.scrollHeight + 'px';
 }
 
 function getFiltered() {
@@ -316,8 +317,22 @@ function switchToSparkle() {
 function toggleSparkleOverview() {
   const body = document.getElementById('sparkleOverviewBody');
   const btn  = document.getElementById('sparkleToggleBtn');
-  const collapsed = body.classList.toggle('collapsed');
-  btn.classList.toggle('collapsed', collapsed);
+  const isCollapsed = btn.classList.contains('collapsed');
+  if (isCollapsed) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.style.opacity   = '1';
+    body.style.marginTop = '8px';
+    btn.classList.remove('collapsed');
+    body.addEventListener('transitionend', () => { body.style.maxHeight = ''; }, { once: true });
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      body.style.maxHeight = '0';
+      body.style.opacity   = '0';
+      body.style.marginTop = '0';
+      btn.classList.add('collapsed');
+    }));
+  }
 }
 
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
