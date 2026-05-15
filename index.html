@@ -72,7 +72,7 @@
   .sparkle-toggle-btn { background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center; color:var(--sparkle); transition:transform .2s; }
   .sparkle-toggle-btn svg { width:18px; height:18px; }
   .sparkle-toggle-btn.collapsed { transform:rotate(-90deg); }
-  .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease, margin-top .3s ease; opacity:1; margin-top:8px; }
+  .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease, margin-top .3s ease; opacity:1; margin-top:0; }
   .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
   .sparkle-cta-btn:hover { background:#b8235d; }
   .sparkle-overview-why { font-size:13px; color:#4b5563; line-height:1.6; margin-bottom:12px; }
@@ -187,8 +187,8 @@
       </div>
       <button class="sparkle-cta-btn" onclick="switchToSparkle()">✨ View All Sparkle Features</button>
     </div>
+    <div class="sparkle-overview-why" id="sparkleWhy"></div>
     <div class="sparkle-overview-body" id="sparkleOverviewBody">
-      <div class="sparkle-overview-why" id="sparkleWhy"></div>
       <div class="sparkle-cat-grid" id="sparkleCatGrid"></div>
     </div>
   </div>
@@ -321,7 +321,6 @@ function toggleSparkleOverview() {
   if (isCollapsed) {
     body.style.maxHeight = body.scrollHeight + 'px';
     body.style.opacity   = '1';
-    body.style.marginTop = '8px';
     btn.classList.remove('collapsed');
     body.addEventListener('transitionend', () => { body.style.maxHeight = ''; }, { once: true });
   } else {
@@ -329,7 +328,6 @@ function toggleSparkleOverview() {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       body.style.maxHeight = '0';
       body.style.opacity   = '0';
-      body.style.marginTop = '0';
       btn.classList.add('collapsed');
     }));
   }
