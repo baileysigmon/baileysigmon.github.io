@@ -83,9 +83,10 @@
   .sparkle-overview-header { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
   .sparkle-overview-header-left { display:flex; align-items:center; gap:8px; }
   .sparkle-overview-title { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:var(--sparkle); }
-  .sparkle-toggle-btn { background:none; border:none; cursor:pointer; padding:2px; display:flex; align-items:center; color:var(--sparkle); transition:transform .2s; }
-  .sparkle-toggle-btn svg { width:18px; height:18px; }
-  .sparkle-toggle-btn.collapsed { transform:rotate(-90deg); }
+  .sparkle-see-more-btn { display:flex; align-items:center; gap:5px; background:none; border:1.5px solid var(--sparkle-bd); border-radius:999px; padding:5px 14px; font-size:12px; font-weight:700; color:var(--sparkle); cursor:pointer; margin-top:12px; transition:background .15s, border-color .15s; }
+  .sparkle-see-more-btn:hover { background:rgba(208,41,107,.07); border-color:var(--sparkle); }
+  .sparkle-see-more-btn svg { width:14px; height:14px; transition:transform .2s; }
+  .sparkle-see-more-btn.collapsed svg { transform:rotate(-90deg); }
   .sparkle-overview-body { overflow:hidden; transition:max-height .3s ease, opacity .3s ease, margin-top .3s ease; opacity:1; margin-top:0; }
   .sparkle-cta-btn { padding:7px 14px; border-radius:999px; font-size:12px; font-weight:700; background:var(--sparkle); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; flex-shrink:0; transition:background .15s; box-shadow:0 2px 8px rgba(208,41,107,.25); }
   .sparkle-cta-btn:hover { background:#b8235d; }
@@ -193,15 +194,14 @@
 
   <div id="sparkleOverview">
     <div class="sparkle-overview-header">
-      <div class="sparkle-overview-header-left">
-        <div class="sparkle-overview-title">✨ Why Move to NPS?</div>
-        <button class="sparkle-toggle-btn" id="sparkleToggleBtn" onclick="toggleSparkleOverview()" aria-label="Toggle section">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-      </div>
+      <div class="sparkle-overview-title">✨ Why Move to NPS?</div>
       <button class="sparkle-cta-btn" onclick="switchToSparkle()">✨ View All Sparkle Features</button>
     </div>
     <div class="sparkle-overview-why" id="sparkleWhy"></div>
+    <button class="sparkle-see-more-btn" id="sparkleToggleBtn" onclick="toggleSparkleOverview()">
+      See More
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
     <div class="sparkle-overview-body" id="sparkleOverviewBody">
       <div class="sparkle-cat-grid" id="sparkleCatGrid"></div>
     </div>
@@ -316,8 +316,10 @@ function buildSparkleOverview() {
     body.style.maxHeight = '0';
     body.style.opacity   = '0';
     btn.classList.add('collapsed');
+    btn.firstChild.textContent = 'See More ';
   } else {
     body.style.maxHeight = body.scrollHeight + 'px';
+    btn.firstChild.textContent = 'See Less ';
   }
 }
 
@@ -354,6 +356,7 @@ function toggleSparkleOverview() {
     body.style.maxHeight = body.scrollHeight + 'px';
     body.style.opacity   = '1';
     btn.classList.remove('collapsed');
+    btn.firstChild.textContent = 'See Less ';
     body.addEventListener('transitionend', () => { body.style.maxHeight = ''; }, { once: true });
   } else {
     body.style.maxHeight = body.scrollHeight + 'px';
@@ -361,6 +364,7 @@ function toggleSparkleOverview() {
       body.style.maxHeight = '0';
       body.style.opacity   = '0';
       btn.classList.add('collapsed');
+      btn.firstChild.textContent = 'See More ';
     }));
   }
 }
